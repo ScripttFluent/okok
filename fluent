@@ -5158,7 +5158,7 @@ local aa = {
             InElementBorder = Color3.fromRGB(90, 90, 90),
             ElementTransparency = 0.87,
             ToggleSlider = Color3.fromRGB(255,255,255),
-            ToggleToggled = Color3.fromRGB(255,255,255),
+            ToggleToggled = Color3.fromRGB(0,0,0),
             SliderRail = Color3.fromRGB(120, 120, 120),
             DropdownFrame = Color3.fromRGB(255,255,255),
             DropdownHolder = Color3.fromRGB(64, 64, 64),
@@ -5177,7 +5177,7 @@ local aa = {
             DialogInput = Color3.fromRGB(55, 55, 55),
             DialogInputLine = Color3.fromRGB(160, 160, 160),
             Text = Color3.fromRGB(255,255,255),
-            SubText = Color3.fromRGB(0,200,210),
+            SubText = Color3.fromRGB(255,255,255),
             Hover = Color3.fromRGB(120, 120, 120),
             HoverChange = 0.07
         }
