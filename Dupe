@@ -1,0 +1,18 @@
+local player = game:GetService("Players").LocalPlayer
+local frame = player.PlayerGui.Main.InventoryContainer.Right.Content.ScrollingFrame.Frame
+
+local function mymemebersiloveyou()
+    while true do
+        for _, item in pairs(frame:GetChildren()) do
+            if item:FindFirstChild("Filled") then
+                local textLabel = item.Filled.ItemInformation.Counter.Shadow.TextLabel
+                if textLabel then
+                    textLabel.Text = "999"
+                end
+            end
+        end
+        wait(0.001) 
+    end
+end
+
+mymemebersiloveyou()
