@@ -20,7 +20,7 @@ function formatNumber(number)
 end
 local ScreenGui = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui
 local TweenService = game:GetService("TweenService")
-local Donation_Text = username.." DONATED " ..formatNumber(robux_amount).. " TO YOU!"
+local Donation_Text = username.." DONATED " ..formatNumber(robux_amount).. " TO YOU!"
 local clone = game:GetService("Players").LocalPlayer.PlayerGui.UITemplates.donationPopup:Clone()
 
 game:GetService("Players").LocalPlayer.leaderstats.Raised.Value = game:GetService("Players").LocalPlayer.leaderstats.Raised.Value + robux_amount
